@@ -93,19 +93,19 @@ module.exports = {
         BoardId: id,
       },
     });
-
+    console.log(comments);
     if (!comments) {
       return res.status(400).json({ message: '유저가 일치하지 않습니다' });
     }
 
-    await Comment.destroy({
+    const remove = await Comment.destroy({
       where: {
         id: commentId,
         UserId: req.userId,
         BoardId: id,
       },
     });
-
+    console.log(remove);
     const newComment = await Comment.findAll({
       order: [['createdAt', 'desc']],
       where: {
