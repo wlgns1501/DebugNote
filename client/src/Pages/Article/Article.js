@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Cookies } from 'react-cookie';
 
 import { useParams, useNavigate } from 'react-router-dom';
-
 
 import '@toast-ui/editor/dist/toastui-editor.css';
 import { Viewer } from '@toast-ui/react-editor';
@@ -13,12 +11,6 @@ import Prism from 'prismjs';
 import 'prismjs/themes/prism.css';
 
 import Comment from '../../Components/Comment';
-
-const cookies = new Cookies();
-
-axios.defaults.headers.common['Authorization'] = `Bearer ${cookies.get(
-  'accToken',
-)}`;
 
 export default function Article({
   currentArticle,
@@ -33,6 +25,7 @@ export default function Article({
   let [bookmarks, setBookmarks] = useState(null);
 
   const loadArticle = () => {
+    console.log('게시물 불러온다.');
     axios
       .get(`http://15.164.104.171/boards/${id}`, {
         headers: { Accept: 'application/json' },
@@ -59,13 +52,21 @@ export default function Article({
             createdAt,
             nickname,
           });
+
+          // setArticle({
+          //   id,
+          //   title,
+          //   content,
+          //   createdAt,
+          //   nickname,
+          // });
           setComments(comment);
           console.log('axios 요청 후 게시글', currentArticle);
         }
       })
       .catch(() => console.log);
   };
-
+  // console.log('새 상태 article', article);
   console.log('<Article /> 상세 조회중인 게시물 정보----->', currentArticle);
   console.log('<Article /> 상세 조회중인 댓글 배열 정보----->', comments);
   // console.log('뷰어에서 볼 컨텐트 ------>', currentArticle.content);
@@ -88,10 +89,8 @@ export default function Article({
 
   // 댓글 수정 콜백
   const commentEditCallback = editedComment => {
-
     // console.log('이거 맞나', editedComment);
     console.log('comments는 뭔데', comments);
-
     const idx = comments.findIndex(el => el.id === editedComment.id);
 
     setComments([
@@ -104,13 +103,6 @@ export default function Article({
   const handleInputValue = e => {
     setCommentContent(e.target.value);
   };
-
-
-  // 댓글 인풋 상태에 반영
-  const handleInputValue = e => {
-    setCommentContent(e.target.value);
-  };
-
 
   // 댓글 제출
   const submitComment = () => {
@@ -146,7 +138,6 @@ export default function Article({
     navigate('/edit');
   };
 
-  //!
   useEffect(() => {
     loadArticle();
   }, []);
@@ -184,7 +175,7 @@ export default function Article({
 
   return (
     <div>
-      {isLogin === true ? (
+      {isLogin ? (
         bookmarks === null ? (
           <button onClick={addBookmark}>북마크하기</button>
         ) : (
@@ -198,7 +189,7 @@ export default function Article({
           <span>{currentArticle.createdAt}</span>
         </div>
 
-        {cookies.get('accToken') ? (
+        {isLogin ? (
           <div className="article-modify-button-wrapper">
             <div onClick={moveToEdit}>수정</div>
             <button onClick={deleteArticle}>삭제</button>{' '}

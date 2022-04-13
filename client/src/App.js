@@ -14,8 +14,6 @@ import Info from './Pages/MyPage/Info';
 import Bookmarks from './Pages/MyPage/Bookmarks';
 import Edit from './Pages/Article/Edit';
 //메뉴바 권한을 위한 쿠키
-import { Cookies } from 'react-cookie';
-const cookies = new Cookies();
 
 function App() {
   //* 로그인 후 받은 id
@@ -49,7 +47,6 @@ function App() {
     axios.post('http://15.164.104.171:80/auth/logout').then(response => {
       if (response.status === 200) {
         console.log('logout ok');
-        cookies.remove('accToken');
         setIsLogin(!isLogin);
       }
     });
@@ -61,6 +58,10 @@ function App() {
   );
   console.log('myId->', myId);
 
+  const handleClick = e => {
+    console.log('핸들 클릭');
+  };
+
   return (
     <BrowserRouter>
       {/* <GlobalStyle /> */}
@@ -69,7 +70,7 @@ function App() {
         logoutHandler={logoutHandler}
         openLoginModalHandler={openLoginModalHandler}
       >
-        {cookies.get('accToken') ? (
+        {isLogin ? (
           <ul className="loggedin-menu">
             <Link to="mypage">
               <li>마이페이지</li>
@@ -113,6 +114,7 @@ function App() {
           path="edit"
           element={
             <Edit
+              isLogin={isLogin}
               currentArticle={currentArticle}
               setCurrentArticle={setCurrentArticle}
             />

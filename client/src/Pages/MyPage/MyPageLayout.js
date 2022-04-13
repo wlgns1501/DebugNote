@@ -12,5 +12,5 @@ export default function MyPageLayout() {
         </section>
       </section>
     </div>
-  )
+  );
 }

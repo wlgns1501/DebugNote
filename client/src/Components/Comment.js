@@ -13,7 +13,7 @@ export default function Comment({
 }) {
   console.log('<Comment /> props로 내려받은 댓글 상세 정보', comment);
   const [isClicked, setIsCliked] = useState(false);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const id = boardId;
   /**
   comment {
