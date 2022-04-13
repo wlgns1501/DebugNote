@@ -75,14 +75,8 @@ module.exports = {
       ],
     });
 
-    const counts = await Comment.count({
-      where: {
-        BoardId: id,
-      },
-    });
     // console.log(updateComment[0]);
-    console.log(counts);
-    // console.log(newComment);
+    console.log(newComment);
 
     res
       .status(200)
@@ -112,7 +106,7 @@ module.exports = {
       },
     });
 
-    const newComment = await Comment.findAndCountAll({
+    const newComment = await Comment.findAll({
       order: [['createdAt', 'desc']],
       where: {
         BoardId: id,

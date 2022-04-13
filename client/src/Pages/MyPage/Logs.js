@@ -80,7 +80,7 @@ export default function Logs() {
               <h2>My Error Logs</h2>
               {isLoading ? (
                 <LoadingIndicator />
-              ) : currentArticle.length !== 0 ? (
+              ) : currentArticle.length ? (
                 currentArticle.map(article => (
                   <ErrorLog key={article.id} article={article} />
                 ))
@@ -89,7 +89,7 @@ export default function Logs() {
               )}
               <Pagination
                 totalArticles={totalArticles}
-                paginate={setCurrentPage}
+                setCurrentPage={setCurrentPage}
               ></Pagination>
             </Section>
           }
