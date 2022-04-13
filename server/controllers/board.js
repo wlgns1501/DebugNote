@@ -63,21 +63,6 @@ module.exports = {
           model: User,
           attributes: [],
         },
-        {
-          attributes: [
-            'id',
-            'comment',
-            'createdAt',
-            'updatedAt',
-            [SequelModel.col('User.nickname'), 'nickname'],
-          ],
-          include: [
-            {
-              model: User,
-              attributes: [],
-            },
-          ],
-        },
       ],
     });
 
@@ -98,6 +83,7 @@ module.exports = {
     //로그인한 유저일 때
     if (token) {
       // 유저 PK
+      // console.log(user)
       const user = jwt.verify(token, process.env.JWT_SECRET);
       bookmark = await db.sequelize.models.Bookmark.findOne({
         where: {
@@ -105,12 +91,8 @@ module.exports = {
           BoardId: id,
         },
       });
-      // console.log(typeof bookmark)
-      console.log(bookmark);
-      // console.log(bookmark.filter((index) => index.BoardId = id))
     }
     // 유저가 북마크 안했으면
-
     if (board.length === 0) {
       return res
         .status(404)
