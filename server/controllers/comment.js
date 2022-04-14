@@ -14,7 +14,10 @@ module.exports = {
       BoardId: id,
       comment: comment,
     });
-    const nickname = await newComment.getUser({ attributes: ['nickname'] });
+    const nickname = await newComment.getUser({
+      attributes: ['nickname'],
+    });
+
     // console.log(nickname.nickname);
     res.status(200).json({
       comment: newComment,
@@ -65,6 +68,7 @@ module.exports = {
         'comment',
         'createdAt',
         'updatedAt',
+        [SequelModel.col('User.id'), 'userId'],
         [SequelModel.col('User.nickname'), 'nickname'],
       ],
       include: [
@@ -76,7 +80,7 @@ module.exports = {
     });
 
     // console.log(updateComment[0]);
-    console.log(newComment);
+    // console.log(newComment);
 
     res
       .status(200)
