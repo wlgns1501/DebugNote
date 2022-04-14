@@ -1,4 +1,4 @@
-// import GlobalStyle from './GlobalStyle';
+import GlobalStyle from './GlobalStyle';
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import { useState } from 'react';
 import axios from 'axios';
@@ -13,14 +13,13 @@ import Logs from './Pages/MyPage/Logs';
 import Info from './Pages/MyPage/Info';
 import Bookmarks from './Pages/MyPage/Bookmarks';
 import Edit from './Pages/Article/Edit';
-//메뉴바 권한을 위한 쿠키
 
 function App() {
   //* 로그인 후 받은 id
   const [myId, setMyId] = useState('');
   const [isLogin, setIsLogin] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  const [isMember, setIsMember] = useState(false);
+  const [isMember, setIsMember] = useState(true);
   // 컴포넌트가 렌더링된 후  불러온 게시물 10개
   const [loadedArticles, setLoadedArticles] = useState([]);
   // 상세 페이지에서 조회중인 게시글 제목, 본문 상태
@@ -36,9 +35,9 @@ function App() {
     setIsOpen(!isOpen);
   };
 
-  const modalToggleHandler = () => {
+  const modalToggleHandler = value => {
     console.log('modal토글 함수 작동');
-    setIsMember(!isMember);
+    setIsMember(value);
   };
 
   // logoutHandler
@@ -46,8 +45,9 @@ function App() {
     console.log('로그아웃 버튼 눌림');
     axios.post('http://15.164.104.171:80/auth/logout').then(response => {
       if (response.status === 200) {
-        console.log('logout ok');
+        axios.defaults.headers.common['Authorization'] = '';
         setIsLogin(!isLogin);
+        alert('로그아웃 되었습니다');
       }
     });
   };
@@ -64,7 +64,7 @@ function App() {
 
   return (
     <BrowserRouter>
-      {/* <GlobalStyle /> */}
+      <GlobalStyle />
       <Navbar
         isLogin={isLogin}
         logoutHandler={logoutHandler}
@@ -126,14 +126,24 @@ function App() {
             <MypageLayout isLogin={isLogin} logoutHandler={logoutHandler} />
           }
         >
-          <Route index element={<Info />} />
-          <Route path="info" element={<Info />} />
-          <Route path="logs/*" element={<Logs />} />
-          <Route path="bookmarks/*" element={<Bookmarks />} />
+          <Route
+            index
+            element={<Info myId={myId} setMyId={setMyId} />}
+            isLogin={isLogin}
+          />
+          <Route
+            path="info"
+            element={<Info myId={myId} setMyId={setMyId} />}
+            setIsLogin={setIsLogin}
+          />
+          <Route path="logs/*" element={<Logs />} isLogin={isLogin} />
+          <Route path="bookmarks/*" element={<Bookmarks />} isLogin={isLogin} />
         </Route>
         <Route
           path="write"
-          element={<Write setCurrentArticle={setCurrentArticle} />}
+          element={
+            <Write setCurrentArticle={setCurrentArticle} isLogin={isLogin} />
+          }
         />
         <Route
           path="notfound"
@@ -148,6 +158,7 @@ function App() {
           openLoginModalHandler={openLoginModalHandler}
           modalToggleHandler={modalToggleHandler}
           setMyId={setMyId}
+          myId={myId}
         />
       ) : null}
     </BrowserRouter>

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route} from 'react-router-dom';
 import axios from 'axios';
 import LoadingIndicator from '../../Components/LoadingIndicator';
 import ErrorLog from '../../Components/ErrorLog';
@@ -8,6 +8,11 @@ import FailIndicator from '../../Components/FailIndicator';
 // import Article from '../Article/Article';
 import styled from 'styled-components';
 
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> fc5ae4dd0fb4b28b96d8d82d2e76e3c441c1955c
 const Box = styled.div`
   padding: 0 0.5rem;
   height: 100%;
@@ -32,7 +37,11 @@ const Section = styled.section`
   }
 `;
 
+<<<<<<< HEAD
 export default function Logs(isLogin) {
+=======
+export default function Logs({isLogin}) {
+>>>>>>> fc5ae4dd0fb4b28b96d8d82d2e76e3c441c1955c
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalArticles, setTotalArticles] = useState(0);
@@ -64,7 +73,11 @@ export default function Logs(isLogin) {
     setIsLoading(false);
   }, [currentPage]);
 
+<<<<<<< HEAD
   return isLogin ? (
+=======
+  return (
+>>>>>>> fc5ae4dd0fb4b28b96d8d82d2e76e3c441c1955c
     <Box className="logs">
       <Routes>
         {/* <Route path="/:id" element={<Article />} /> 전체 게시글 프롭스뺌 */}
@@ -91,7 +104,5 @@ export default function Logs(isLogin) {
         />
       </Routes>
     </Box>
-  ) : (
-    <Navigate to="/" />
-  );
+  )
 }

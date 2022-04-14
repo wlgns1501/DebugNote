@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route} from 'react-router-dom';
 import axios from 'axios';
 import LoadingIndicator from '../../Components/LoadingIndicator';
 import ErrorLog from '../../Components/ErrorLog';
@@ -32,7 +32,11 @@ const Section = styled.section`
   }
 `;
 
+<<<<<<< HEAD
 export default function Bookmarks(isLogin) {
+=======
+export default function Bookmarks({isLogin}) {
+>>>>>>> fc5ae4dd0fb4b28b96d8d82d2e76e3c441c1955c
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalArticles, setTotalArticles] = useState(0);
@@ -54,10 +58,11 @@ export default function Bookmarks(isLogin) {
           //console.log(response.data.boards.rows[0].Boards, '응답');
         } else {
           console.log('게시물부르기실패');
+          alert("게시물을 불러오지 못했습니다")
         }
       })
       .catch(error => {
-        console.log('게시글 못받음');
+        alert("게시물을 불러오지 못했습니다")
       });
   };
 
@@ -67,7 +72,11 @@ export default function Bookmarks(isLogin) {
     setIsLoading(false);
   }, []);
 
+<<<<<<< HEAD
   return isLogin ? (
+=======
+  return (
+>>>>>>> fc5ae4dd0fb4b28b96d8d82d2e76e3c441c1955c
     <Box>
       <Routes>
         <Route path="/:id" element={<Article />} />
@@ -94,7 +103,5 @@ export default function Bookmarks(isLogin) {
         />
       </Routes>
     </Box>
-  ) : (
-    <Navigate to="/" />
-  );
+  )
 }

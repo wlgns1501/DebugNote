@@ -1,4 +1,3 @@
-import './Main.css';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import Searchbar from '../Components/Searchbar';
@@ -7,6 +6,20 @@ import FailIndicator from '../Components/FailIndicator';
 import ErrorLog from '../Components/ErrorLog';
 //* practice
 import Pagination from '../Components/Pagination';
+import styled from 'styled-components';
+
+const Box = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  >.articles{
+    padding-top:1rem;
+    width: 100%;
+    display:flex;
+    flex-direction:column;
+    align-items: center;
+  }
+`;
 
 export default function Main({
   isLogin,
@@ -57,14 +70,13 @@ export default function Main({
   }, [currentPage]);
 
   return (
-    <div className="main-content">
+    <Box className="main-content">
       <Searchbar
         setLoadedArticles={setLoadedArticles}
         setTotalArticles={setTotalArticles}
         currentPage={currentPage}
       />
       <section className="articles">
-        <div className="main-errlog-list-title">최신순</div>
         {/*useEffect을 통해 전체 게시글을 보여줄 부분*/}
         {isLoading ? (
           <LoadingIndicator />
@@ -80,6 +92,6 @@ export default function Main({
           setCurrentPage={setCurrentPage}
         ></Pagination>
       </section>
-    </div>
+    </Box>
   );
 }
