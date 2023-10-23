@@ -29,7 +29,6 @@ router.get('/', async (req, res) => {
   pages = Number(req.query.pages || 1);
 
   const boards = await pagenation.getBoards(pages, limit);
-  
 
   // 북마크 갯수 내려주기
   // const boardsId = boards.rows.map(board => {
