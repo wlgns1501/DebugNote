@@ -14,14 +14,12 @@ module.exports = {
       BoardId: id,
       comment: comment,
     });
-    const nickname = await newComment.getUser({
-      attributes: ['nickname'],
-    });
-
-    // console.log(nickname.nickname);
+    const nickname = await newComment.getUser({ attributes: ['nickname'] });
+    const userId = await newComment.getUser({ attributes: ['id'] });
     res.status(200).json({
       comment: newComment,
       nickname: nickname.nickname,
+      userId: userId.id,
       message: '댓글을 추가했습니다.',
     });
   },
@@ -37,8 +35,6 @@ module.exports = {
         BoardId: id,
       },
     });
-
-    // console.log(comments);
 
     if (!comments) {
       return res.status(400).json({ message: '유저가 일치하지 않습니다' });
@@ -79,9 +75,6 @@ module.exports = {
       ],
     });
 
-    // console.log(updateComment[0]);
-    // console.log(newComment);
-
     res
       .status(200)
       .json({ comment: newComment, message: '댓글을 수정 했습니다.' });
@@ -89,7 +82,7 @@ module.exports = {
   remove: async (req, res) => {
     const { id } = req.params;
     const { commentId } = req.body;
-
+    console.log(commentId);
     const comments = await Comment.findOne({
       where: {
         id: commentId,
@@ -130,7 +123,6 @@ module.exports = {
       ],
     });
 
-    // console.log(newComment);
     res
       .status(200)
       .json({ comment: newComment, message: '댓글을 삭제했습니다.' });

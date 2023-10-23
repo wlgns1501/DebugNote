@@ -65,13 +65,13 @@ module.exports = {
         httpOnly: true,
         // secure: true,
         sameSite: 'Lax',
-        domain: '*'
+        domain: '*',
       })
       .json({ id: user.id, accToken, message: '로그인 성공했습니다.' });
   },
   // 로그아웃
   logout: async (req, res) => {
-    res.cookie('token', '');
+    // res.cookie('token', '');
     res.status(200).json({ message: '로그아웃에 성공했습니다.' });
   },
   // 인증

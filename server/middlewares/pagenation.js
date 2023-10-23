@@ -72,4 +72,17 @@ module.exports = {
       subQuery: false,
     });
   },
+  // countBookmark: async boardIds => {
+  //   const counting = [];
+
+  //   for (let i = 0; i < 10; i++) {
+  //     const count = await db.sequelize.models.Bookmark.count({
+  //       where: {
+  //         BoardId: boardIds[i],
+  //       },
+  //     });
+  //     counting.push(count);
+  //   }
+  //   return counting;
+  // },
 };

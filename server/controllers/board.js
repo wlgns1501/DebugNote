@@ -57,6 +57,7 @@ module.exports = {
         'createdAt',
         'updatedAt',
         [SequelModel.col('User.nickname'), 'nickname'],
+        [SequelModel.col('User.id'), 'userId'],
       ],
       include: [
         {
@@ -79,6 +80,7 @@ module.exports = {
     if (!token) {
       token = req.cookies['token'];
     }
+    console.log(token);
 
     //로그인한 유저일 때
     if (token) {
