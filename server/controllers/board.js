@@ -4,40 +4,69 @@ const Comment = require('../models/comment');
 const User = require('../models/user');
 const Sequelize = require('sequelize');
 const SequelModel = Sequelize.Sequelize;
-const jwt = require('jsonwebtoken');
-require('dotenv').config();
 
 module.exports = {
   post: async (req, res) => {
-    const { title, content } = req.body;
+    // id: 게시글 PK
+    const { id } = req.params;
+    const { comment } = req.body;
 
-    const board = await Board.create({
-      title,
-      content,
+    const newComment = await Comment.create({
       UserId: req.userId,
-      picture: 'dummy',
+      BoardId: id,
+      comment: comment,
+    });
+    const nickname = await newComment.getUser({ attributes: ['nickname'] });
+    const userId = await newComment.getUser({ attributes: ['id'] });
+    res.status(200).json({
+      comment: newComment,
+      nickname: nickname.nickname,
+      userId: userId.id,
+      message: '댓글을 추가했습니다.',
+    });
+  },
+  get: async (req, res) => {},
+  put: async (req, res) => {
+    const { id } = req.params; // 게시물의 id
+    const { commentId, comment } = req.body;
+
+    const comments = await Comment.findOne({
+      where: {
+        id: commentId,
+        UserId: req.userId,
+        BoardId: id,
+      },
     });
 
-    res
-      .status(203)
-      .json({ boardId: board.id, message: '게시물 생성 되었습니다.' });
-  },
-  get: async (req, res) => {
-    const { id } = req.params;
+    if (!comments) {
+      return res.status(400).json({ message: '유저가 일치하지 않습니다' });
+    }
 
-    const board = await Board.findOne({
+    const updateComment = await Comment.update(
+      {
+        comment: comment,
+      },
+      {
+        where: {
+          id: commentId,
+          UserId: req.userId,
+          BoardId: id,
+        },
+      },
+    );
+
+    const newComment = await Comment.findAll({
       where: {
-        id: id,
+        id: commentId,
+        UserId: req.userId,
+        BoardId: id,
       },
       attributes: [
         'id',
-        [SequelModel.col('User.nickname'), 'nickname'],
-        'title',
-        'content',
-        'picture',
+        'comment',
         'createdAt',
         'updatedAt',
-        'userId',
+        [SequelModel.col('User.nickname'), 'nickname'],
       ],
       include: [
         {
@@ -47,7 +76,36 @@ module.exports = {
       ],
     });
 
-    const comment = await Comment.findAll({
+    res
+      .status(200)
+      .json({ comment: newComment, message: '댓글을 수정 했습니다.' });
+  },
+  remove: async (req, res) => {
+    const { id } = req.params;
+    const { commentId } = req.body;
+    console.log(commentId);
+    const comments = await Comment.findOne({
+      where: {
+        id: commentId,
+        UserId: req.userId,
+        BoardId: id,
+      },
+    });
+
+    if (!comments) {
+      return res.status(400).json({ message: '유저가 일치하지 않습니다' });
+    }
+
+    await Comment.destroy({
+      where: {
+        id: commentId,
+        UserId: req.userId,
+        BoardId: id,
+      },
+    });
+
+    const newComment = await Comment.findAll({
+      order: [['createdAt', 'desc']],
       where: {
         BoardId: id,
       },
@@ -155,6 +213,9 @@ module.exports = {
         id,
       },
     });
-    res.status(200).json({ message: '게시물이 삭제 되었습니다' });
+
+    res
+      .status(200)
+      .json({ comment: newComment, message: '댓글을 삭제했습니다.' });
   },
 };

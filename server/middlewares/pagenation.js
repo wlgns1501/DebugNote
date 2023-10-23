@@ -12,7 +12,7 @@ module.exports = {
         title: {
           [Op.like]: '%' + option + '%', // 유사 검색
         },
-      },
+      }, 
       limit: Number(limit),
       offset: (page - 1) * 10,
     });
