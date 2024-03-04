@@ -8,160 +8,129 @@ const SequelModel = Sequelize.Sequelize;
 module.exports = {
   post: async (req, res) => {
     // id: 게시글 PK
-    const { id } = req.params;
-    const { comment } = req.body;
+    const userId = req.userId;
+    const { title, content } = req.body;
+    const board = await Board.create({ title, content, UserId: userId });
 
-    const newComment = await Comment.create({
-      UserId: req.userId,
-      BoardId: id,
-      comment: comment,
-    });
-    const nickname = await newComment.getUser({ attributes: ['nickname'] });
-    const userId = await newComment.getUser({ attributes: ['id'] });
+    // const userId = await newComment.getUser({ attributes: ['id'] });
+
     res.status(200).json({
-      comment: newComment,
-      nickname: nickname.nickname,
-      userId: userId.id,
-      message: '댓글을 추가했습니다.',
+      board,
+      boardId: board.id,
+      message: '게시물을 추가하였습니다.',
     });
   },
-  get: async (req, res) => {},
-  put: async (req, res) => {
-    const { id } = req.params; // 게시물의 id
-    const { commentId, comment } = req.body;
+  get: async (req, res) => {
+    const boardId = req.params.id;
 
-    const comments = await Comment.findOne({
+    const board = await Board.findOne({
       where: {
-        id: commentId,
-        UserId: req.userId,
-        BoardId: id,
+        id: boardId,
+      },
+      attributes: [
+        'id',
+        'title',
+        'content',
+        'createdAt',
+        'userId',
+        [SequelModel.col('User.nickname'), 'nickname'],
+      ],
+      include: [
+        {
+          model: User,
+          attributes: [],
+        },
+        {
+          model: Comment,
+          attributes: [],
+        },
+      ],
+    });
+
+    if (!board) {
+      res.status(404).json({ message: '해당 게시물이 존재하지 않습니다.' });
+    }
+
+    const comment = await Comment.findAll({
+      where: { boardId: board.id },
+      attributes: [
+        'id',
+        'comment',
+        'createdAt',
+        'userId',
+        [SequelModel.col('User.nickname'), 'nickname'],
+      ],
+
+      include: [
+        {
+          model: User,
+          attributes: [],
+        },
+      ],
+    });
+
+    const bookmark = await db.sequelize.models.Bookmark.findAll({
+      where: {
+        boardId: board.id,
       },
     });
 
-    if (!comments) {
+    res.status(200).json({ board, comment, bookmark, message: 'success' });
+  },
+  put: async (req, res) => {
+    const { id } = req.params; // 게시물의 id
+    const { title, content } = req.body;
+
+    const board = await Board.findOne({
+      where: {
+        id,
+        UserId: req.userId,
+      },
+    });
+
+    if (!board) {
       return res.status(400).json({ message: '유저가 일치하지 않습니다' });
     }
 
-    const updateComment = await Comment.update(
+    const updateBoard = await Board.update(
       {
-        comment: comment,
+        title,
+        content,
       },
       {
         where: {
-          id: commentId,
+          id,
           UserId: req.userId,
-          BoardId: id,
         },
       },
     );
 
-    const newComment = await Comment.findAll({
-      where: {
-        id: commentId,
-        UserId: req.userId,
-        BoardId: id,
-      },
-      attributes: [
-        'id',
-        'comment',
-        'createdAt',
-        'updatedAt',
-        [SequelModel.col('User.nickname'), 'nickname'],
-      ],
-      include: [
-        {
-          model: User,
-          attributes: [],
-        },
-      ],
-    });
-
     res
       .status(200)
-      .json({ comment: newComment, message: '댓글을 수정 했습니다.' });
+      .json({ board: updateBoard, message: '댓글을 수정 했습니다.' });
   },
   remove: async (req, res) => {
     const { id } = req.params;
-    const { commentId } = req.body;
-    console.log(commentId);
-    const comments = await Comment.findOne({
+
+    const board = await Board.findOne({
       where: {
-        id: commentId,
+        id,
         UserId: req.userId,
-        BoardId: id,
       },
     });
 
-    if (!comments) {
+    if (!board) {
       return res.status(400).json({ message: '유저가 일치하지 않습니다' });
     }
 
-    await Comment.destroy({
+    await Board.destroy({
       where: {
-        id: commentId,
+        id,
         UserId: req.userId,
-        BoardId: id,
       },
     });
 
-    const newComment = await Comment.findAll({
-      order: [['createdAt', 'desc']],
-      where: {
-        BoardId: id,
-      },
-      attributes: [
-        'id',
-        'comment',
-        'createdAt',
-        'updatedAt',
-        [SequelModel.col('User.nickname'), 'nickname'],
-        [SequelModel.col('User.id'), 'userId'],
-      ],
-      include: [
-        {
-          model: User,
-          attributes: [],
-        },
-      ],
-    });
-
-    // 유저의 해당 게시글 북마크 정보 내려주기 (로그인 안한 사람은 [])
-    let bookmark;
-    let token;
-    // 토큰이 헤더로 전달되었을 때
-    const authHeader = req.get('Authorization');
-    if (authHeader && authHeader.startsWith('Bearer ')) {
-      token = authHeader.split(' ')[1];
-    }
-
-    // 토큰이 쿠키로 전달되었을 때
-    if (!token) {
-      token = req.cookies['token'];
-    }
-    console.log(token);
-
-    //로그인한 유저일 때
-    if (token) {
-      // 유저 PK
-      // console.log(user)
-      const user = jwt.verify(token, process.env.JWT_SECRET);
-      bookmark = await db.sequelize.models.Bookmark.findOne({
-        where: {
-          UserId: user.id,
-          BoardId: id,
-        },
-      });
-    }
-    // 유저가 북마크 안했으면
-    if (board.length === 0) {
-      return res
-        .status(404)
-        .json({ message: '해당 게시물이 존재하지 않습니다.' });
-    }
-
-    return res
-      .status(200)
-      .json({ board, comment, bookmark, message: '게시물을 가져왔습니다.' });
+    return res.status(200).json({ message: '게시물을 삭제했습니다.' });
   },
   // 게시글 수정
   put: async (req, res) => {

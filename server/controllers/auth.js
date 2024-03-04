@@ -2,7 +2,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const config = require('../config');
 const User = require('../models/user');
-
+const cookieParser = require('cookie-parser');
 module.exports = {
   // 회원가입
   signup: async (req, res) => {
@@ -56,18 +56,11 @@ module.exports = {
       return res.status(401).json({ message: '비밀번호가 일치하지 않습니다.' });
     }
 
-    const accToken = await createJwtToken(user.id);
-    // console.log(accToken);
-    // console.log(res)
     return res
-      .status(201)
-      .cookie('token', accToken, {
-        httpOnly: true,
-        // secure: true,
-        sameSite: 'Lax',
-        domain: '*',
-      })
-      .json({ id: user.id, accToken, message: '로그인 성공했습니다.' });
+      .status(200)
+      .send({ id: user.id, message: '로그인 성공했습니다.' });
+
+    // console.log(response);
   },
   // 로그아웃
   logout: async (req, res) => {
@@ -81,6 +74,28 @@ module.exports = {
       return res.status(404).json({ message: 'User not found' });
     }
     res.status(200).json({ token: req.token, username: user.username });
+  },
+
+  getToken: async (req, res) => {
+    const { email } = req.query;
+
+    const user = await User.findOne({
+      where: {
+        email,
+      },
+    });
+
+    const accToken = await createJwtToken(user.id);
+
+    // cookieParser.JSONCookie({ token: accToken });
+
+    res.cookie('token', accToken);
+
+    // console.log(res);
+
+    return res
+      .status(200)
+      .send({ id: user.id, accToken, message: '로그인 성공했습니다.' });
   },
 };
 

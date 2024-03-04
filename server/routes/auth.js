@@ -28,6 +28,7 @@ router.post(
 
 router.post('/login', authController.login);
 
+router.get('/getToken', authController.getToken);
 // 로그아웃
 router.post('/logout', authController.logout);
 

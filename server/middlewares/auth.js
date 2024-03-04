@@ -3,7 +3,7 @@ const User = require('../models/user');
 require('dotenv').config();
 
 module.exports = async (req, res, next) => {
-  // console.log(req.cookies)
+  console.log(req.cookies);
   // console.log(typeof req.headers.cookies)
   let token;
   // 토큰이 헤더로 전달되었을 때
@@ -12,6 +12,7 @@ module.exports = async (req, res, next) => {
     token = authHeader.split(' ')[1];
   }
 
+  console.log(token);
   // 토큰이 쿠키로 전달되었을 때
   if (!token) {
     token = req.cookies['token'];

@@ -18,10 +18,11 @@ sequelize
   .catch(err => {
     console.error(err);
   });
+app.use(cookieParser());
 
 const corsOption = {
   // origin: 'http://debugnote-client.s3-website.ap-northeast-2.amazonaws.com',
-  origin: '*',
+  origin: 'http://localhost:3000',
   // optionsSuccessStatus: 200,
   credentials: true, // allow the Access-Control-Allow-Credentials
   // withcredentials: true, // allow the Access-Control-Allow-Credentials
@@ -35,7 +36,6 @@ app.use(
     extended: false,
   }),
 );
-app.use(cookieParser());
 app.use(helmet());
 
 app.use(morgan('dev'));
