@@ -56,15 +56,16 @@ module.exports = {
       return res.status(401).json({ message: '비밀번호가 일치하지 않습니다.' });
     }
 
+    const accToken = await createJwtToken(user.id);
+
+    res.cookie('token', accToken);
+
     return res
       .status(200)
       .send({ id: user.id, message: '로그인 성공했습니다.' });
-
-    // console.log(response);
   },
   // 로그아웃
   logout: async (req, res) => {
-    // res.cookie('token', '');
     res.status(200).json({ message: '로그아웃에 성공했습니다.' });
   },
   // 인증

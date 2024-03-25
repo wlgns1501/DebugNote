@@ -22,7 +22,7 @@ app.use(cookieParser());
 
 const corsOption = {
   // origin: 'http://debugnote-client.s3-website.ap-northeast-2.amazonaws.com',
-  origin: 'http://localhost:3000',
+  origin: 'https://info-market-8ayh.vercel.app/',
   // optionsSuccessStatus: 200,
   credentials: true, // allow the Access-Control-Allow-Credentials
   // withcredentials: true, // allow the Access-Control-Allow-Credentials
